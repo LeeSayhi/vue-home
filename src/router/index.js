@@ -1,11 +1,12 @@
 /* eslint-disable */
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from 'components/home/home'
-import Message from 'components/message/message'
-import User from 'components/user/user'
-import More from 'components/more/more'
-import Center from 'components/center/center'
+import Home from 'components/home/home.vue'
+import Message from 'components/message/message.vue'
+import User from 'components/user/user.vue'
+import More from 'components/more/more.vue'
+import Center from 'components/center/center.vue'
+import List from 'components/page-list/page-list.vue'
 
 Vue.use(Router)
 
@@ -17,7 +18,13 @@ export default new Router({
     },
     {
       path: '/Home',
-      component: Home
+      component: Home,
+      children: [
+        {
+          path: ':id',
+          component: List
+        }
+      ]
     },
     {
       path: '/Message',

@@ -84,7 +84,7 @@
       })
     },
     methods: {
-      logout () {
+      logout() {
         localStorage.removeItem('accesstoken')
         localStorage.removeItem('user_id')
         localStorage.removeItem('loginname')

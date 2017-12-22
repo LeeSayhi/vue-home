@@ -1,5 +1,5 @@
 <template>
-  <div class="tab">
+  <div class="footer">
     <router-link to="/Home" tag="div" class="tab-item">
       <i class="icon-home2 icon"></i>
       <span class="tab-link">首页</span>
@@ -13,7 +13,7 @@
       <span class="tab-link">我的</span>
     </router-link>
     <router-link to="/More" tag="div" class="tab-item">
-      <i class="icon-more icon"></i>
+      <i class="icon-envelop icon"></i>
       <span class="tab-link">更多</span>
     </router-link>
   </div>
@@ -40,7 +40,7 @@
 <style scoped lang="stylus">
   @import '~common/stylus/variable'
 
-  .tab
+  .footer
     display: flex
     position: fixed
     bottom: 0
