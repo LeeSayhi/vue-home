@@ -2,7 +2,7 @@
   <div class="tab">
     <div class="wrapper">
       <ul class="tab-list">
-        <li class="tab-item" v-for="(item, index) in list" :class="{active: currentIndex === index}" @click="tabSelect(index)">{{ item }}</li>
+        <li class="tab-item" v-for="(item, index) in list" :key="index" :value="item.id" :class="{active: currentIndex === index}" @click="tabSelect(index)">{{ item.title }}</li>
       </ul>
     </div>
   </div>
@@ -11,7 +11,32 @@
   export default {
     data() {
       return {
-        list: ['全部', '精华', 'weex', '分享', '问答', '招聘'],
+        list: [
+          {
+            title: '全部',
+            id: 'all'
+          },
+          {
+            title: '精华',
+            id: 'good'
+          },
+          {
+            title: 'weex',
+            id: 'weex'
+          },
+          {
+            title: '分享',
+            id: 'share'
+          },
+          {
+            title: '问答',
+            id: 'ask'
+          },
+          {
+            title: '招聘',
+            id: 'job'
+          }
+        ],
         currentIndex: 0
       }
     },

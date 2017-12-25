@@ -1,61 +1,121 @@
 <template>
-  <transition name="slide">
-    <div class="page-list">
-      <div class="list-wrapper">
-        <ul>
-          <li class="item" v-for="item in topics">
-            <div class="avatar">
-              <img :src="item.author.avatar_url" width="36" height="36">
-            </div>
-            <div class="info-wrapper">
-              <div class="info">
-                <span class="title">招聘</span>
-                <span class="desc" v-html="item.title"></span>
+  <div>
+    <transition name="slide">
+      <div class="page-list" ref="pageList">
+        <div class="list-wrapper">
+          <ul>
+            <li class="item" v-for="item in topics">
+              <div class="avatar">
+                <img :src="item.author.avatar_url" width="36" height="36">
               </div>
-              <div class="icon-group">
-                <i class="icon-message"></i>
-                <span>100</span>
-                <i class="icon-eye"></i>
-                <span>2222</span>
+              <div class="info-wrapper">
+                <div class="info">
+                  <span class="title" v-if="item.top">置顶</span>
+                  <span class="title" v-else-if="item.good">精华</span>
+                  <span class="title" v-else-if="item.tab === 'share'" :style="styleObj">分享</span>
+                  <span class="title" v-else-if="item.tab === 'ask'" :style="styleObj">问答</span>
+                  <span class="title" v-else-if="item.tab === 'job'" :style="styleObj">招聘</span>
+                  <span class="desc" v-html="item.title"></span>
+                </div>
+                <div class="icon-group">
+                  <i class="icon-message"></i>
+                  <span>100</span>
+                  <i class="icon-eye"></i>
+                  <span>2222</span>
+                </div>
+                <div class="time">
+                  <span>{{item.last_reply_at | formatDate}}</span>
+                </div>
               </div>
-              <div class="time">
-                <span>56秒前</span>
-              </div>
-            </div>
-          </li>
-        </ul>
+            </li>
+            <v-loading v-show="hasMore || !topics.length"></v-loading>
+          </ul>
+        </div>
       </div>
-    </div>
-  </transition>
+    </transition>
+  </div>
 </template>
 <script>
   import axios from 'axios'
+  import Loading from 'base/loading/loading'
+  import BScroll from 'better-scroll'
+  import { formatNewDate } from 'common/js/filter'
 
   export default {
     data() {
       return {
-        topics: []
+        topics: [],
+        styleObj: {
+          backgroundColor: '#C5C5C7'
+        },
+        hasMore: true
       }
     },
     created() {
       this.topic()
+      this.initScroll()
     },
     methods: {
       topic() {
-        axios.get('https://www.vue-js.com/api/v1/topics', {
-          page: 1,
-          tab: 'all',
-          limit: 20,
-          mdrender: true
+        const url = 'https://www.vue-js.com/api/v1/topics'
+        this.page = 1
+        this.hasMore = true
+        axios.get(url, {
+          params: {
+            page: this.page,
+            tab: 'all'
+          }
         })
         .then((res) => {
           this.topics = res.data.data
-          console.log(this.topics)
+          this.checkMore(res.data.data)
         })
-        .catch((err) => {
+      },
+      // getAttribute(el) {
 
+      // },
+      initScroll() {
+        this.$nextTick(() => {
+          this.scroll = new BScroll(this.$refs.pageList)
+
+          this.pullLoad()
+        })
+      },
+      checkMore(data) {
+        if (!data.length) {
+          this.hasMore = false
+        }
+      },
+      // 上拉加载更多
+      pullLoad() {
+        this.scroll.on('scrollEnd', () => {
+          if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
+            if (!this.hasMore) {
+              return
+            }
+            this.page++
+            const url = 'https://www.vue-js.com/api/v1/topics'
+            axios.get(url, {
+              params: {
+                page: this.page,
+                tab: 'all'
+              }
+            })
+            .then((res) => {
+              this.topics = this.topics.concat(res.data.data)
+              this.checkMore(res.data.data)
+            })
+          }
         })
       }
+    },
+    filters: {
+      formatDate(time) {
+        return formatNewDate(time)
+      }
+    },
+    components: {
+      'v-loading': Loading
     }
   }
 </script>
