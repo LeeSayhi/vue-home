@@ -2,7 +2,7 @@
   <div class="tab">
     <div class="wrapper">
       <ul class="tab-list">
-        <li class="tab-item" v-for="(item, index) in list" :key="index" :value="item.id" :class="{active: currentIndex === index}" @click="tabSelect(index)">{{ item.title }}</li>
+        <li class="tab-item" v-for="(item, index) in list" :key="index" :value="item.id" :class="{active: currentIndex === index}" @click="tabSelect(index, item.id)">{{ item.title }}</li>
       </ul>
     </div>
   </div>
@@ -41,9 +41,9 @@
       }
     },
     methods: {
-      tabSelect(index) {
+      tabSelect(index, id) {
         this.currentIndex = index
-        this.$emit('select', index)
+        this.$emit('select', id)
       }
     }
   }

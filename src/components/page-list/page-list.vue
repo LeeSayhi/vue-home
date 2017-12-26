@@ -37,7 +37,7 @@
 </template>
 <script>
   import axios from 'axios'
-  import Loading from 'base/loading/loading'
+  import Loading from 'base/loading/loading.vue'
   import BScroll from 'better-scroll'
   import { formatNewDate } from 'common/js/filter'
 
@@ -48,22 +48,30 @@
         styleObj: {
           backgroundColor: '#C5C5C7'
         },
-        hasMore: true
+        hasMore: true,
+        id: 'all'
+      }
+    },
+    watch: {
+      $route(to) {
+        this.id = to.params.id
+        this.topics = []
+        this.getTopic()
       }
     },
     created() {
-      this.topic()
+      this.getTopic()
       this.initScroll()
     },
     methods: {
-      topic() {
+      getTopic() {
         const url = 'https://www.vue-js.com/api/v1/topics'
         this.page = 1
         this.hasMore = true
         axios.get(url, {
           params: {
             page: this.page,
-            tab: 'all'
+            tab: this.id
           }
         })
         .then((res) => {
@@ -71,18 +79,16 @@
           this.checkMore(res.data.data)
         })
       },
-      // getAttribute(el) {
-
-      // },
+      // 初始化滚动 并监听上拉加载动作
       initScroll() {
         this.$nextTick(() => {
           this.scroll = new BScroll(this.$refs.pageList)
-
           this.pullLoad()
         })
       },
+      // 如没有更多内容，标识位设为 false，loading效果隐藏
       checkMore(data) {
-        if (!data.length) {
+        if (!data.length || data.length < 7) {
           this.hasMore = false
         }
       },
@@ -93,12 +99,13 @@
             if (!this.hasMore) {
               return
             }
-            this.page++
+            this.page += 1
+
             const url = 'https://www.vue-js.com/api/v1/topics'
             axios.get(url, {
               params: {
                 page: this.page,
-                tab: 'all'
+                tab: this.id
               }
             })
             .then((res) => {

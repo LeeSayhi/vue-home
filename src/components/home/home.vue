@@ -23,9 +23,9 @@
       }
     },
     methods: {
-      selectInfo(index) {
+      selectInfo(id) {
         this.$router.push({
-          path: `/Home/${index}`
+          path: `/Home/${id}`
         })
       }
     },

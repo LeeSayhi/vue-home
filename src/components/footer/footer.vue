@@ -1,6 +1,6 @@
 <template>
   <div class="footer">
-    <router-link to="/Home" tag="div" class="tab-item">
+    <router-link to="/Home/all" tag="div" class="tab-item">
       <i class="icon-home2 icon"></i>
       <span class="tab-link">首页</span>
     </router-link>
@@ -22,7 +22,7 @@
   export default {
     created() {},
     watch: {
-      '$route': 'fatchDate'
+      $route: 'fatchDate'
     },
     methods: {
       fatchDate() {
