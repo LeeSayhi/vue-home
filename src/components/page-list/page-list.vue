@@ -4,12 +4,13 @@
       <div class="page-list" ref="pageList">
         <div class="list-wrapper">
           <ul>
-            <li class="item" v-for="item in topics">
+            <li class="item" v-for="item in topics" @click="selectArticle(item.id)">
               <div class="avatar">
                 <img :src="item.author.avatar_url" width="36" height="36">
               </div>
               <div class="info-wrapper">
                 <div class="info">
+                  <!-- 待优化 -->
                   <span class="title" v-if="item.top">置顶</span>
                   <span class="title" v-else-if="item.good">精华</span>
                   <span class="title" v-else-if="item.tab === 'share'" :style="styleObj">分享</span>
@@ -19,9 +20,9 @@
                 </div>
                 <div class="icon-group">
                   <i class="icon-message"></i>
-                  <span>100</span>
+                  <span>{{item.reply_count}}</span>
                   <i class="icon-eye"></i>
-                  <span>2222</span>
+                  <span>{{item.visit_count}}</span>
                 </div>
                 <div class="time">
                   <span>{{item.last_reply_at | formatDate}}</span>
@@ -33,6 +34,7 @@
         </div>
       </div>
     </transition>
+    <router-view></router-view>
   </div>
 </template>
 <script>
@@ -82,7 +84,9 @@
       // 初始化滚动 并监听上拉加载动作
       initScroll() {
         this.$nextTick(() => {
-          this.scroll = new BScroll(this.$refs.pageList)
+          this.scroll = new BScroll(this.$refs.pageList, {
+            click: true
+          })
           this.pullLoad()
         })
       },
@@ -113,6 +117,11 @@
               this.checkMore(res.data.data)
             })
           }
+        })
+      },
+      selectArticle(id) {
+        this.$router.push({
+          path: `/Home/${this.id}/${id}`
         })
       }
     },

@@ -7,6 +7,7 @@ import User from 'components/user/user.vue'
 import More from 'components/more/more.vue'
 import Center from 'components/center/center.vue'
 import List from 'components/page-list/page-list.vue'
+import Detail from 'components/page-detail/page-detail.vue' 
 
 Vue.use(Router)
 
@@ -22,7 +23,13 @@ export default new Router({
       children: [
         {
           path: ':id',
-          component: List
+          component: List,
+          children: [
+            {
+              path: ':id',
+              component: Detail
+            }
+          ]
         }
       ]
     },
