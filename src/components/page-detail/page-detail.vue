@@ -1,74 +1,80 @@
 <template>
 	<transition name="fade">
 		<div class="page-detail">
-		<v-header>
-			<div class="header">
-				<div class="back center" @click="back">
-					<i class="icon-chevron-up"></i>
-				</div>
-				<div class="title center">
-					<h2>{{data.title}}</h2>
-				</div>
-				<div class="popover center">
-					<i>oooo</i>
-				</div>
-			</div>
-		</v-header>
-		<div class="content">
-			<div class="content-title">
-				<div class="title-info">
-					<span class="title">{{getTitle}}</span>
-					<span class="desc">{{data.title}}</span>
-				</div>
-			</div>
-			<div class="content-author">
-				<div class="author-info">
-					<div class="avatar">
-						<img :src="data.author.avatar_url" width="48" height="48">
+			<v-header>
+				<div class="header">
+					<div class="back center" @click="back">
+						<i class="icon-chevron-up"></i>
 					</div>
-					<div class="desc">
-						<span>作者：{{data.author.loginname}}</span>
-						<span>发表时间：{{data.create_at | formateDate}}</span>
-						<span>最后回复：{{data.last_reply_at | formateDate}}</span>
-						<span>浏览量：{{data.visit_count}}</span>
+					<div class="title center">
+						<h2>{{data.title}}</h2>
+					</div>
+					<div class="popover center">
+						<i>oooo</i>
 					</div>
 				</div>
-			</div>
-			<div class="content-main">
-				<div class="text">
-					<p v-html="data.content"></p>
-				</div>
-			</div>
-			<div class="content-comments">
-				<div class="title">
-					<h3>28</h3>
-				</div>
-				<div class="comments">
-					<ul>
-						<li class="item">
-							<div class="wrapper">
-								<div class="user">
-									<div class="avatar">
-										<img src="" width="48" height="48">
-									</div>
-									<div class="name">
-										<span>lee</span>
-										<span class="time">8月前</span>
-									</div>
-								</div>
-								<div class="detail">
-									<p>nudndnfdunfdufndu</p>
-								</div>
-								<div class="icon">
-									<i class="icon-envelop"></i>
-									<i class="icon-chevron-up"></i>
-								</div>
+			</v-header>
+			<div class="content" ref="content">
+				<div class="content-wrapper">
+					<div class="content-title">
+						<div class="title-info">
+							<span class="title">{{getTitle}}</span>
+							<span class="desc">{{data.title}}</span>
+						</div>
+					</div>
+					<div class="content-author">
+						<div class="author-info">
+							<div class="avatar">
+								<img :src="avatar_url" width="48" height="48">
 							</div>
-						</li>
-					</ul>
+							<div class="desc">
+								<span>作者：{{loginname}}</span>
+								<span>发表时间：{{data.create_at | formateDate}}</span>
+								<span>最后回复：{{data.last_reply_at | formateDate}}</span>
+								<span>浏览量：{{data.visit_count}}</span>
+							</div>
+						</div>
+					</div>
+					<div class="content-collect">
+						<div class="collect-wrapper">
+							<i class="icon-star-empty icon"></i>
+							<span>收藏</span>
+						</div>
+					</div>
+					<div class="content-main">
+						<div class="text" v-html="data.content" ref="text"></div>
+					</div>
+					<div class="content-comments">
+						<div class="title">
+							<h3>28</h3>
+						</div>
+						<div class="comments">
+							<ul>
+								<li class="item">
+									<div class="wrapper">
+										<div class="user">
+											<div class="avatar">
+												<img src="" width="48" height="48">
+											</div>
+											<div class="name">
+												<span>lee</span>
+												<span class="time">8月前</span>
+											</div>
+										</div>
+										<div class="detail">
+											<p>nudndnfdunfdufndu</p>
+										</div>
+										<div class="icon">
+											<i class="icon-envelop"></i>
+											<i class="icon-chevron-up"></i>
+										</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
 		</div>
 	</transition>
 </template>
@@ -76,12 +82,16 @@
 	import Header from 'components/header/header.vue'
 	import axios from 'axios'
 	import { formatNewDate } from 'common/js/filter'
+	import BScroll from 'better-scroll'
+	import marked from 'marked'
 
 	export default {
 		data() {
 			return {
 				id: '',
-				data: {}
+				data: {},
+				avatar_url: '',
+				loginname: ''
 			}
 		},
 		components: {
@@ -90,11 +100,15 @@
 		created() {
 			this.id = this.$route.params.id
 			this.getTopicInfo()
+			this.initScroll()
 		},
 		computed: {
 			getTitle() {
 				return this.data.tab === 'share' ? '分享' : (this.data.tab === 'good' ? '精华' : '置顶')
-			}
+			},
+			compiledMarkdown() {
+		    return marked(this.content, { sanitize: true })
+		  }
 		},
 		methods: {
 			back() {
@@ -111,8 +125,17 @@
         .then((res) => {
         	if (res.statusText === 'OK') {
         		this.data = res.data.data
+        		this.avatar_url = this.data.replies[0].author.avatar_url
+        		this.loginname = this.data.replies[0].author.loginname
         	}
         })
+			},
+			initScroll() {
+				this.$nextTick(() => {
+					this.scroll = new	BScroll(this.$refs.content, {
+						click: true
+					})				
+				})
 			}
 		},
 		filters: {
@@ -122,7 +145,9 @@
 		}
 	}
 </script>
-<style scoped lang="stylus">
+<style lang="stylus">
+	@import "~common/stylus/content.styl"
+
 	.page-detail
 		position: fixed
 		top: 0
@@ -130,7 +155,7 @@
 		bottom: 0
 		left: 0
 		width: 100%
-		z-index: 200
+		z-index: 100
 		background: #fff
 		&.fade-enter-active, &.fade-leave-active
 			transition: all 0.3s
@@ -138,6 +163,7 @@
 			transform: translate3d(100%, 0, 0)
 		.header
 			display: flex
+			z-index: 200
 			.center
 				display: flex
 				align-items: center
@@ -159,8 +185,12 @@
 				width: 50px
 				flex: 0 0 50px
 		.content
-			position: relative
+			position: fixed
 			top: 60px
+			right: 0
+			bottom: 0
+			left: 0
+			width: 100%
 			.content-title
 				height: 60px
 				line-height: 60px
@@ -184,12 +214,22 @@
 						height: 48px
 						line-height: 24px
 						font-size: 12px
+						color: gray
+			.content-collect
+				padding: 20px 0 8px
+				text-align: center
+				.collect-wrapper
+					font-size: 0
+					i
+						font-size: 20px
+						margin-right: 10px
+					span
+						font-size: 20px
 			.content-main
 				padding: 12px 24px
 				border-bottom: 8px solid #eee
-				p
-					font-size: 16px
-					word-wrap: break-word
+				.text
+					color: #474a4f
 			.content-comments
 				.title
 					padding: 0 24px

@@ -135,7 +135,7 @@
     }
   }
 </script>
-<style scoped lang="stylus">
+<style lang="stylus">
   .page-list
     position: fixed
     top: 9rem
