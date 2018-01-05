@@ -25,10 +25,10 @@
 					<div class="content-author">
 						<div class="author-info">
 							<div class="avatar">
-								<img :src="avatar_url" width="48" height="48">
+								<img :src="data.author.avatar_url" width="48" height="48">
 							</div>
 							<div class="desc">
-								<span>作者：{{loginname}}</span>
+								<span>作者：{{data.author.loginname}}</span>
 								<span>发表时间：{{data.create_at | formateDate}}</span>
 								<span>最后回复：{{data.last_reply_at | formateDate}}</span>
 								<span>浏览量：{{data.visit_count}}</span>
@@ -46,24 +46,22 @@
 					</div>
 					<div class="content-comments">
 						<div class="title">
-							<h3>28</h3>
+							<h3>{{data.replies.length}}条评论</h3>
 						</div>
 						<div class="comments">
 							<ul>
-								<li class="item">
+								<li class="item" v-for="item in data.replies">
 									<div class="wrapper">
 										<div class="user">
 											<div class="avatar">
-												<img src="" width="48" height="48">
+												<img :src="item.author.avatar_url" width="48" height="48">
 											</div>
 											<div class="name">
-												<span>lee</span>
-												<span class="time">8月前</span>
+												<span>{{item.author.loginname}}</span>
+												<span class="time">{{item.create_at | formateDate}}</span>
 											</div>
 										</div>
-										<div class="detail">
-											<p>nudndnfdunfdufndu</p>
-										</div>
+										<div class="detail" v-html="item.content"></div>
 										<div class="icon">
 											<i class="icon-envelop"></i>
 											<i class="icon-chevron-up"></i>
@@ -90,8 +88,7 @@
 			return {
 				id: '',
 				data: {},
-				avatar_url: '',
-				loginname: ''
+				
 			}
 		},
 		components: {
@@ -100,7 +97,6 @@
 		created() {
 			this.id = this.$route.params.id
 			this.getTopicInfo()
-			this.initScroll()
 		},
 		computed: {
 			getTitle() {
@@ -125,8 +121,8 @@
         .then((res) => {
         	if (res.statusText === 'OK') {
         		this.data = res.data.data
-        		this.avatar_url = this.data.replies[0].author.avatar_url
-        		this.loginname = this.data.replies[0].author.loginname
+        		console.log(this.data)
+        		this.initScroll()
         	}
         })
 			},
@@ -134,7 +130,7 @@
 				this.$nextTick(() => {
 					this.scroll = new	BScroll(this.$refs.content, {
 						click: true
-					})				
+					})
 				})
 			}
 		},
@@ -238,11 +234,13 @@
 					font-size: 14px
 					background: #f6f6f6
 				.comments
-					position: relative
 					margin: 0 24px
-					border-bottom: 1px solid #eee
 					.item
+						position: relative
 						padding: 12px 0
+						border-bottom: 1px solid #eee
+						&:last-child
+							border: none
 						.user
 							font-size: 0
 							margin-bottom: 12px
@@ -259,8 +257,14 @@
 						.detail
 							p
 								font-size: 14px
+								line-height: 20px
+								margin-right: 60px
 						.icon
 							position: absolute
 							bottom: 12px
 							right: 0
+							.icon-envelop
+								padding: 12px 6px 12px 12px
+							.icon-chevron-up
+								padding: 12px 12px 12px 6px
 </style>

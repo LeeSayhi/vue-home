@@ -1,4 +1,4 @@
-h2, h3
+.content-main h1, .content-main h2, .content-main h3
   display: block;
   font-size: 1.8em
   -webkit-margin-before: 0.83em
@@ -6,21 +6,20 @@ h2, h3
   -webkit-margin-start: 0px
   -webkit-margin-end: 0px
   font-weight: bold
-h5 
+.content-main h5 
   display: block;
   font-size: 1.5em
   -webkit-margin-before: 0.83em
   -webkit-margin-after: 0.83em
   -webkit-margin-start: 0px
   -webkit-margin-end: 0px
-  font-weight: bold
-p
+  font-weight: bold 
+  
+.content-main h4
   font-size: 14px
   line-height: 1.5
-  font-weight: 400
-  text-indent: 28px
-  
-ul ul, ol ul
+
+.content-main ul ul, .content-main ol ul
   display: block
   -webkit-margin-before: 1em
   -webkit-margin-after: 1em
@@ -29,7 +28,7 @@ ul ul, ol ul
   -webkit-padding-start: 40px
   list-style-type: circle
 
-ul, menu, dir {
+.content-main ul, .content-main menu, dir {
   display: block
   list-style-type: disc
   -webkit-margin-before: 1em
@@ -39,32 +38,44 @@ ul, menu, dir {
   -webkit-padding-start: 40px
 }
 
-li
+.content-main li
   display: list-item
   text-align: -webkit-match-parent
   font-size: 14px
   line-height: 1.5
-  
-a
+
+.content-main ul > li > ul > li
+  list-style: circle
+
+.content-main a
   text-decoration: none
   color: #ff4081
   user-select: none
   -webkit-user-select: none
   
-code, kbd, pre, samp
+.content-main img 
+  width: 100%
+  
+.content-main code, kbd, pre, samp
     font-family: monospace,monospace
     font-size: 1em
 
-pre
+.content-main pre
   white-space: pre-wrap
   word-break: break-all
-  margin: 0
+  margin: 10px
 
 
-blockquote
+.content-main blockquote
   display: block
   -webkit-margin-before: 1em
   -webkit-margin-after: 1em
   -webkit-margin-start: 40px
   -webkit-margin-end: 40px
+  
+.content-main p
+  font-size: 14px
+  line-height: 1.5
+  font-weight: 400
+
   
