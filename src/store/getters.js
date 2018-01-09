@@ -1,1 +1,1 @@
-export const user = state => state.user
+export const favorite = state => state.favorite

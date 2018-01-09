@@ -26,7 +26,7 @@
           <div class="num">
             <span>0</span>
           </div>          
-          <i class="icon-chevron-up icon-chevron"></i>
+          <i class="icon-chevron-down icon-chevron"></i>
         </div>  
       </div>
       <div class="topic recent">
@@ -38,7 +38,7 @@
           <div class="num">
             <span>0</span>
           </div>          
-          <i class="icon-chevron-up icon-chevron"></i>
+          <i class="icon-chevron-down icon-chevron"></i>
         </div>  
       </div>
       <div class="topic recent">
@@ -50,7 +50,7 @@
           <div class="num">
             <span>0</span>
           </div>          
-          <i class="icon-chevron-up icon-chevron"></i>
+          <i class="icon-chevron-down icon-chevron"></i>
         </div>  
       </div>
     </div>
@@ -158,6 +158,7 @@
             font-size: 1.6667rem
             vertical-align: middle
             margin-right: 3rem
+            color: #757575
           .text
             display: inline-block
             font-size: 16px

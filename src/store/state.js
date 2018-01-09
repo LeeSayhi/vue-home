@@ -1,3 +1,5 @@
 const state = {
-  user: {}
+  favorite: {}
 }
+
+export default state

@@ -35,10 +35,10 @@
 							</div>
 						</div>
 					</div>
-					<div class="content-collect">
+					<div class="content-collect" v-show="loginname">
 						<div class="collect-wrapper">
-							<i class="icon-star-empty icon"></i>
-							<span>收藏</span>
+							<i :class="isFavorite" class="icon" @click="toggleFavorite"></i>
+							<span>{{toggleText}}</span>
 						</div>
 					</div>
 					<div class="content-main">
@@ -82,13 +82,14 @@
 	import { formatNewDate } from 'common/js/filter'
 	import BScroll from 'better-scroll'
 	import marked from 'marked'
-
+	import { mapMutations } from 'vuex'
 	export default {
 		data() {
 			return {
 				id: '',
 				data: {},
-				
+				loginname: '',
+				favorite: false
 			}
 		},
 		components: {
@@ -97,14 +98,18 @@
 		created() {
 			this.id = this.$route.params.id
 			this.getTopicInfo()
+			this.isLogin()
 		},
 		computed: {
 			getTitle() {
 				return this.data.tab === 'share' ? '分享' : (this.data.tab === 'good' ? '精华' : '置顶')
 			},
-			compiledMarkdown() {
-		    return marked(this.content, { sanitize: true })
-		  }
+		  isFavorite() {
+		  	return this.favorite ? 'icon-star-full' : 'icon-star-empty'
+		  },
+		  toggleText() {
+				return this.favorite ? '已收藏' : '收藏'
+			}
 		},
 		methods: {
 			back() {
@@ -121,7 +126,6 @@
         .then((res) => {
         	if (res.statusText === 'OK') {
         		this.data = res.data.data
-        		console.log(this.data)
         		this.initScroll()
         	}
         })
@@ -132,7 +136,17 @@
 						click: true
 					})
 				})
-			}
+			},
+			isLogin() {
+				this.loginname = localStorage.getItem('loginname')
+			},
+			toggleFavorite() {
+				this.favorite = !this.favorite
+				this.setFavorite(1)
+			},
+			...mapMutations({
+				setFavorite: 'SET_FAVORITE'
+			})
 		},
 		filters: {
 			formateDate(time) {
@@ -218,7 +232,9 @@
 					font-size: 0
 					i
 						font-size: 20px
-						margin-right: 10px
+						padding: 10px
+						&.icon-star-full
+							color: red
 					span
 						font-size: 20px
 			.content-main

@@ -1,7 +1,9 @@
 import * as types from './mutation-types'
 
 const mutations = {
-  [types.SET_USER] (state){
-    state.user = state
+  [types.SET_FAVORITE] (state, favorite) {
+    state.favorite = favorite
   }
-} 
+}
+
+export default mutations

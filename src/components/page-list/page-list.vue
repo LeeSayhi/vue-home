@@ -148,10 +148,10 @@
     &.slide-enter, &.slide-leave-to
       transform: translate3d(-100%, 0, 0)
     .list-wrapper
-      padding: 20px 16px
       .item
         display: flex
-        margin-bottom: 20px
+        padding: 16px
+        border-bottom: 4px solid #eee
         .avatar
           width: 3rem
           flex: 3rem 0 0
