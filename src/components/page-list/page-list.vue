@@ -6,7 +6,7 @@
           <ul>
             <li class="item" v-for="item in topics" @click="selectArticle(item.id)">
               <div class="avatar">
-                <img :src="item.author.avatar_url" width="36" height="36">
+                <img v-lazy="item.author.avatar_url" width="36" height="36">
               </div>
               <div class="info-wrapper">
                 <div class="info">

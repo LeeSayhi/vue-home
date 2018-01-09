@@ -25,7 +25,7 @@
 					<div class="content-author">
 						<div class="author-info">
 							<div class="avatar">
-								<img :src="data.author.avatar_url" width="48" height="48">
+								<img v-lazy="data.author.avatar_url" width="48" height="48">
 							</div>
 							<div class="desc">
 								<span>作者：{{data.author.loginname}}</span>
@@ -54,7 +54,7 @@
 									<div class="wrapper">
 										<div class="user">
 											<div class="avatar">
-												<img :src="item.author.avatar_url" width="48" height="48">
+												<img v-lazy="item.author.avatar_url" width="48" height="48">
 											</div>
 											<div class="name">
 												<span>{{item.author.loginname}}</span>
