@@ -1,8 +1,8 @@
 import * as types from './mutation-types'
 
 const mutations = {
-  [types.SET_FAVORITE] (state, favorite) {
-    state.favorite = favorite
+  [types.SET_FAVORITE_HISTORY](state, favoriteHistory) {
+    state.favoriteHistory = favoriteHistory
   }
 }
 

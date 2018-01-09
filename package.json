@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.17.1",
     "better-scroll": "^1.6.2",
+    "good-storage": "^1.0.1",
     "marked": "^0.3.9",
     "stylus": "^0.54.5",
     "vue": "^2.5.2",

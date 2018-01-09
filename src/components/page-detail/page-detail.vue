@@ -37,8 +37,8 @@
 					</div>
 					<div class="content-collect" v-show="loginname">
 						<div class="collect-wrapper">
-							<i :class="isFavorite" class="icon" @click="toggleFavorite"></i>
-							<span>{{toggleText}}</span>
+							<i :class="toggleIcon(data)" class="icon" @click="toggleFavorite"></i>
+							<span>{{toggleText(data)}}</span>
 						</div>
 					</div>
 					<div class="content-main">
@@ -82,7 +82,8 @@
 	import { formatNewDate } from 'common/js/filter'
 	import BScroll from 'better-scroll'
 	import marked from 'marked'
-	import { mapMutations } from 'vuex'
+	import { mapActions, mapGetters } from 'vuex'
+	import { createArt } from 'common/js/article'
 	export default {
 		data() {
 			return {
@@ -104,12 +105,9 @@
 			getTitle() {
 				return this.data.tab === 'share' ? '分享' : (this.data.tab === 'good' ? '精华' : '置顶')
 			},
-		  isFavorite() {
-		  	return this.favorite ? 'icon-star-full' : 'icon-star-empty'
-		  },
-		  toggleText() {
-				return this.favorite ? '已收藏' : '收藏'
-			}
+			...mapGetters([
+				'favoriteHistory'
+			])
 		},
 		methods: {
 			back() {
@@ -141,12 +139,37 @@
 				this.loginname = localStorage.getItem('loginname')
 			},
 			toggleFavorite() {
-				this.favorite = !this.favorite
-				this.setFavorite(1)
+				if (this.isFavorite(this.data)) {
+					this.deleteFavoriteHistory(this.data)
+				} else {
+					this.saveFavoriteHistory(this.data)
+				}
 			},
-			...mapMutations({
-				setFavorite: 'SET_FAVORITE'
-			})
+			toggleIcon(data ) {
+				if (this.isFavorite(data)) {
+					return 'icon-star-full'
+				} else {
+					return 'icon-star-empty'
+				}
+			},
+			toggleText(data ) {
+				if (this.isFavorite(data)) {
+					return '已收藏'
+				} else {
+					return '收藏'
+				}
+			},
+			// 判断是否已收藏
+			isFavorite(art) {
+				const index = this.favoriteHistory.findIndex((item) => {
+					return art.id === item.id
+				})
+				return index > -1
+			},
+			...mapActions([
+				'saveFavoriteHistory',
+				'deleteFavoriteHistory'
+			])
 		},
 		filters: {
 			formateDate(time) {

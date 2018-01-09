@@ -36,6 +36,8 @@ module.exports = {
     'eol-last': 0,
     'semi': [2, 'never'],
     'linebreak-style': 0,
-    "comma-dangle": ["error", "never"]
+    "comma-dangle": ["error", "never"],
+    "no-param-reassign": 1,
+    "no-nested-ternary": 2
   }
 }

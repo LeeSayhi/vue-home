@@ -1,5 +1,7 @@
+import { loadFavoriteHistory } from 'common/js/cache'
+
 const state = {
-  favorite: {}
+  favoriteHistory: loadFavoriteHistory()
 }
 
 export default state
