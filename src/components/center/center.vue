@@ -41,17 +41,32 @@
           <i class="icon-chevron-down icon-chevron"></i>
         </div>  
       </div>
-      <div class="topic recent">
+      <div class="topic recent" @click.self="openCollect">
         <div class="left">
           <i class="icon-star-full icon"></i>
           <h2 class="text">收藏的话题</h2>
         </div>
         <div class="right">
           <div class="num">
-            <span>0</span>
+            <span>{{collect.length}}</span>
           </div>          
-          <i class="icon-chevron-down icon-chevron"></i>
-        </div>  
+          <i class="icon-chevron" :class="toggleUpDown"></i>
+        </div>
+        <transition name="slideDown">
+          <div class="content" v-if="showCollect">
+            <ul class="list">
+              <li class="item" v-for="item in collect">
+                <div class="item-left">
+                  <i class="icon-eye"></i>
+                  <h2>{{item.title}}</h2>
+                </div>
+                <div class="item-right">
+                  <p class="time">{{item.collectTime | formatDate}}</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </transition>
       </div>
     </div>
     <div class="login-btm">
@@ -66,22 +81,33 @@
   import Header from 'components/header/header.vue'
   import axios from 'axios'
   import { formatNewDate } from 'common/js/filter'
+  import { mapGetters } from 'vuex'
 
   export default {
     data() {
       return {
         loginname: '',
-        user: {}
+        user: {},
+        collect: {},
+        showCollect: false
       }
     },
     created() {
       this.loginname = localStorage.getItem('loginname')
-
       axios.get(`https://www.vue-js.com/api/v1/user/${this.loginname}`, {
       })
       .then((res) => {
         this.user = res.data.data
       })
+      this.getCollect()
+    },
+    computed: {
+      ...mapGetters([
+        'favoriteHistory'
+      ]),
+      toggleUpDown() {
+        return this.showCollect ? 'icon-chevron-up' : 'icon-chevron-down'
+      }
     },
     methods: {
       logout() {
@@ -89,7 +115,13 @@
         localStorage.removeItem('user_id')
         localStorage.removeItem('loginname')
 
-        this.$router.push('/Home')
+        this.$router.push('/Home/all')
+      },
+      getCollect() {
+        this.collect = this.favoriteHistory
+      },
+      openCollect() {
+        this.showCollect = !this.showCollect
       }
     },
     filters: {
@@ -99,6 +131,11 @@
     },
     components: {
       'v-header': Header
+    },
+    watch: {
+      favoriteHistory() {
+        this.getCollect()
+      }
     }
   }
 </script>
@@ -149,7 +186,7 @@
       margin: 0.25rem 2.1667rem 0 1.3334rem
       .recent
         position: relative
-        line-height: 34px
+        line-height: 4rem
         font-size: 0
         .left
           display: inline-block
@@ -172,6 +209,35 @@
             display: inline-block
             width: 1.6667rem
             height: 1.6667rem
+        .content
+          .list
+            .item
+              position: relative
+              border-top: 1px solid #eee
+              &:last-child
+                border-bottom: 1px solid #eee
+              .item-left
+                i
+                  display: inline-block
+                  font-size: 1rem
+                  vertical-align: middle
+                  margin-right: 3rem
+                  color: #757575
+                h2
+                  display: inline-block
+                  vertical-align: middle
+                  width: 60%
+                  text-overflow: ellipsis
+                  overflow: hidden
+                  white-space: nowrap
+                  font-size: 14px
+              .item-right
+                position: absolute
+                top: 0
+                right: 0
+                p
+                  font-size: 14px
+                
     .login-btm
       margin-top: 2rem
       text-align: center
@@ -186,4 +252,12 @@
         .text
           font-size: $font-size-medium-x
           letter-spacing:4px
+  
+  @keyframes slide-down
+    0%
+      height: 0
+    50%
+      height: 50%
+    100%
+      height: 100%
 </style>

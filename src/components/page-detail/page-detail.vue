@@ -81,7 +81,6 @@
 	import axios from 'axios'
 	import { formatNewDate } from 'common/js/filter'
 	import BScroll from 'better-scroll'
-	import marked from 'marked'
 	import { mapActions, mapGetters } from 'vuex'
 	import { createArt } from 'common/js/article'
 	export default {
@@ -142,17 +141,17 @@
 				if (this.isFavorite(this.data)) {
 					this.deleteFavoriteHistory(this.data)
 				} else {
-					this.saveFavoriteHistory(this.data)
+					this.saveFavoriteHistory(createArt(this.data))
 				}
 			},
-			toggleIcon(data ) {
+			toggleIcon(data) {
 				if (this.isFavorite(data)) {
 					return 'icon-star-full'
 				} else {
 					return 'icon-star-empty'
 				}
 			},
-			toggleText(data ) {
+			toggleText(data) {
 				if (this.isFavorite(data)) {
 					return '已收藏'
 				} else {

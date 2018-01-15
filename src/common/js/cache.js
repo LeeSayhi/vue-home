@@ -3,11 +3,12 @@ import storage from 'good-storage'
 const FAVORITE_KEY = '__favorite__'
 const FAVORITE_LEN = 20
 
+const USER_KEY = '__user__'
+
 function insertArray(arr, val, maxLen) {
-  let index = arr.findIndex((item) => {
+  const index = arr.findIndex((item) => {
     return item.id === val.id
   })
-  console.log(arr, val)
   if (index === 0) {
     return
   }
@@ -21,7 +22,7 @@ function insertArray(arr, val, maxLen) {
 }
 
 function deleteFromArray(arr, val) {
-  let index = arr.findIndex((item) => {
+  const index = arr.findIndex((item) => {
     return item.id === val.id
   })
   if (index > -1) {
@@ -29,15 +30,29 @@ function deleteFromArray(arr, val) {
   }
 }
 
+
+export function saveUser(accesstoken, res) {
+  const user = {
+    user_id: res.data.id,
+    accesstoken,
+    loginname: res.data.loginname
+  }
+  storage.set(USER_KEY, user)
+}
+
+export function loadUser() {
+  return storage.get(USER_KEY, [])
+}
+
 export function saveFavorite(art) {
-  let arts = storage.get(FAVORITE_KEY, [])
+  const arts = storage.get(FAVORITE_KEY, [])
   insertArray(arts, art, FAVORITE_LEN)
   storage.set(FAVORITE_KEY, arts)
   return arts
 }
 
-export function deleteFavorite(art) { 
- let arts = storage.get(FAVORITE_KEY, [])
+export function deleteFavorite(art) {
+ const arts = storage.get(FAVORITE_KEY, [])
  deleteFromArray(arts, art)
  storage.set(FAVORITE_KEY, arts)
  return arts
