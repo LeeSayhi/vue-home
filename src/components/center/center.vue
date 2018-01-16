@@ -41,16 +41,18 @@
           <i class="icon-chevron-down icon-chevron"></i>
         </div>  
       </div>
-      <div class="topic recent" @click.self="openCollect">
-        <div class="left">
-          <i class="icon-star-full icon"></i>
-          <h2 class="text">收藏的话题</h2>
-        </div>
-        <div class="right">
-          <div class="num">
-            <span>{{collect.length}}</span>
-          </div>          
-          <i class="icon-chevron" :class="toggleUpDown"></i>
+      <div class="topic recent">
+        <div class="title" @click="openCollect()">
+          <div class="left">
+            <i class="icon-star-full icon"></i>
+            <h2 class="text">收藏的话题</h2>
+          </div>
+          <div class="right">
+            <div class="num">
+              <span>{{collect.length}}</span>
+            </div>          
+            <i class="icon-chevron" :class="toggleUpDown"></i>
+          </div>
         </div>
         <transition name="slideDown">
           <div class="content" v-if="showCollect">
