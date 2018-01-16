@@ -1,87 +1,80 @@
 <template>
-  <div class="center">
-    <v-header>
-      <div class="header-wrapper">
-        <h2 class="title">个人中心</h2>
-        <i class="icon-envelop icon"></i>
-      </div>
-    </v-header>
-    <div class="info-wrapper">
-      <div class="avatar">
-        <img :src="user.avatar_url" width="60" height="60">
-      </div>
-      <div class="info">
-        <h2 class="name">{{user.loginname}}</h2>
-        <p class="point">积分：{{user.score}}</p>
-        <p class="time">注册时间：{{user.create_at | formatDate}}</p>
-      </div>
-    </div>
-    <div class="content-wrapper">
-      <div class="topic recent">
-        <div class="left">
-          <i class="icon-message icon"></i>
-          <h2 class="text">最近的话题</h2>
+  <div>
+    <div class="center">
+      <v-header>
+        <div class="header-wrapper">
+          <h2 class="title">个人中心</h2>
+          <i class="icon-envelop icon"></i>
         </div>
-        <div class="right">
-          <div class="num">
-            <span>0</span>
-          </div>          
-          <i class="icon-chevron-down icon-chevron"></i>
-        </div>  
-      </div>
-      <div class="topic recent">
-        <div class="left">
-          <i class="icon-earth icon"></i>
-          <h2 class="text">最近的回复</h2>
+      </v-header>
+      <div class="info-wrapper">
+        <div class="avatar">
+          <img :src="user.avatar_url" width="60" height="60">
         </div>
-        <div class="right">
-          <div class="num">
-            <span>0</span>
-          </div>          
-          <i class="icon-chevron-down icon-chevron"></i>
-        </div>  
+        <div class="info">
+          <h2 class="name">{{user.loginname}}</h2>
+          <p class="point">积分：{{user.score}}</p>
+          <p class="time">注册时间：{{user.create_at | formatDate}}</p>
+        </div>
       </div>
-      <div class="topic recent">
-        <div class="title" @click="openCollect()">
+      <div class="content-wrapper">
+        <div class="topic recent">
           <div class="left">
-            <i class="icon-star-full icon"></i>
-            <h2 class="text">收藏的话题</h2>
+            <i class="icon-message icon"></i>
+            <h2 class="text">最近的话题</h2>
           </div>
           <div class="right">
             <div class="num">
-              <span>{{collect.length}}</span>
+              <span>0</span>
             </div>          
-            <i class="icon-chevron" :class="toggleUpDown"></i>
+            <i class="icon-chevron-down icon-chevron"></i>
+          </div>  
+        </div>
+        <div class="topic recent">
+          <div class="title" @click="showReply()">
+            <div class="left">
+              <i class="icon-earth icon"></i>
+              <h2 class="text">最近的回复</h2>
+            </div>
+            <div class="right">
+              <div class="num">
+                <span>0</span>
+              </div>          
+              <i class="icon-chevron-down icon-chevron"></i>
+            </div>
+          </div>
+          <article-list></article-list>
+        </div>
+        <div class="topic recent">
+          <div class="title" @click="showCollect()">
+            <div class="left">
+              <i class="icon-star-full icon"></i>
+              <h2 class="text">收藏的话题</h2>
+            </div>
+            <div class="right">
+              <div class="num">
+                <span>{{favoriteHistory.length}}个</span>
+              </div>       
+              <i class="icon-chevron" :class="toggleUpDown"></i>
+            </div>
+            <article-list :favoriteHistory="favoriteHistory" :show="show"></article-list>
           </div>
         </div>
-        <transition name="slideDown">
-          <div class="content" v-if="showCollect">
-            <ul class="list">
-              <li class="item" v-for="item in collect">
-                <div class="item-left">
-                  <i class="icon-eye"></i>
-                  <h2>{{item.title}}</h2>
-                </div>
-                <div class="item-right">
-                  <p class="time">{{item.collectTime | formatDate}}</p>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </transition>
+      </div>
+      <div class="login-btm">
+        <button>
+          <div class="wrapper"></div>
+          <span class="text" @click="logout">退出登录</span>
+        </button>
       </div>
     </div>
-    <div class="login-btm">
-      <button>
-        <div class="wrapper"></div>
-        <span class="text" @click="logout">退出登录</span>
-      </button>
-    </div>
+    <router-view></router-view>
   </div>
 </template>
 <script>
   import Header from 'components/header/header.vue'
   import axios from 'axios'
+  import ArticleList from 'components/article-list/article-list.vue'
   import { formatNewDate } from 'common/js/filter'
   import { mapGetters } from 'vuex'
 
@@ -90,8 +83,7 @@
       return {
         loginname: '',
         user: {},
-        collect: {},
-        showCollect: false
+        show: false
       }
     },
     created() {
@@ -101,15 +93,14 @@
       .then((res) => {
         this.user = res.data.data
       })
-      this.getCollect()
     },
     computed: {
+      toggleUpDown() {
+        return this.show ? 'icon-chevron-up' : 'icon-chevron-down'
+      },
       ...mapGetters([
         'favoriteHistory'
-      ]),
-      toggleUpDown() {
-        return this.showCollect ? 'icon-chevron-up' : 'icon-chevron-down'
-      }
+      ])
     },
     methods: {
       logout() {
@@ -119,11 +110,8 @@
 
         this.$router.push('/Home/all')
       },
-      getCollect() {
-        this.collect = this.favoriteHistory
-      },
-      openCollect() {
-        this.showCollect = !this.showCollect
+      showCollect() {
+        this.show = !this.show
       }
     },
     filters: {
@@ -132,12 +120,8 @@
       }
     },
     components: {
-      'v-header': Header
-    },
-    watch: {
-      favoriteHistory() {
-        this.getCollect()
-      }
+      'v-header': Header,
+      ArticleList
     }
   }
 </script>
@@ -209,37 +193,6 @@
           font-size: 16px
           .num
             display: inline-block
-            width: 1.6667rem
-            height: 1.6667rem
-        .content
-          .list
-            .item
-              position: relative
-              border-top: 1px solid #eee
-              &:last-child
-                border-bottom: 1px solid #eee
-              .item-left
-                i
-                  display: inline-block
-                  font-size: 1rem
-                  vertical-align: middle
-                  margin-right: 3rem
-                  color: #757575
-                h2
-                  display: inline-block
-                  vertical-align: middle
-                  width: 60%
-                  text-overflow: ellipsis
-                  overflow: hidden
-                  white-space: nowrap
-                  font-size: 14px
-              .item-right
-                position: absolute
-                top: 0
-                right: 0
-                p
-                  font-size: 14px
-                
     .login-btm
       margin-top: 2rem
       text-align: center
@@ -254,12 +207,4 @@
         .text
           font-size: $font-size-medium-x
           letter-spacing:4px
-  
-  @keyframes slide-down
-    0%
-      height: 0
-    50%
-      height: 50%
-    100%
-      height: 100%
 </style>

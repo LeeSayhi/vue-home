@@ -9,7 +9,6 @@ export function formatNewDate(str) {
   const nowDate = new Date()
 
   const time = nowDate.getTime() - date.getTime()
-
   switch (true) {
     case time < 0:
       return ' '

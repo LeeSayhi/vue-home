@@ -47,7 +47,13 @@ export default new Router({
     },
     {
       path: '/Center',
-      component: Center
+      component: Center,
+      children: [
+        {
+          path: ':id',
+          component: Detail
+        }
+      ]
     }
   ]
 })

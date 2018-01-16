@@ -63,10 +63,11 @@
 										</div>
 										<div class="detail" v-html="item.content"></div>
 										<div class="icon">
-											<i class="icon-envelop"></i>
+											<i class="icon-envelop" @click="reply"></i>
 											<i class="icon-chevron-up"></i>
 										</div>
 									</div>
+									<reply :showFlag="showFlag"></reply>
 								</li>
 							</ul>
 						</div>
@@ -79,6 +80,7 @@
 <script>
 	import Header from 'components/header/header.vue'
 	import axios from 'axios'
+	import Reply from 'base/reply/reply'
 	import { formatNewDate } from 'common/js/filter'
 	import BScroll from 'better-scroll'
 	import { mapActions, mapGetters } from 'vuex'
@@ -89,11 +91,9 @@
 				id: '',
 				data: {},
 				loginname: '',
-				favorite: false
+				favorite: false,
+				showFlag: false
 			}
-		},
-		components: {
-			'v-header': Header
 		},
 		created() {
 			this.id = this.$route.params.id
@@ -168,12 +168,19 @@
 			...mapActions([
 				'saveFavoriteHistory',
 				'deleteFavoriteHistory'
-			])
+			]),
+			reply() {
+				this.showFlag = !this.showFlag
+			}
 		},
 		filters: {
 			formateDate(time) {
 				return formatNewDate(time)
 			}
+		},
+		components: {
+			'v-header': Header,
+			Reply
 		}
 	}
 </script>
@@ -224,13 +231,16 @@
 			left: 0
 			width: 100%
 			.content-title
+				display: table
 				height: 60px
-				line-height: 60px
 				padding: 0 24px
 				border-bottom: 1px solid #eee
 				.title-info
-					.title
-						font-size: 14px
+					display: table-cell
+					vertical-align: middle
+					font-size: 14px
+					.desc
+						line-height: 20px
 			.content-author
 				padding: 10px 24px
 				border-bottom: 1px solid #eee
@@ -274,35 +284,36 @@
 				.comments
 					margin: 0 24px
 					.item
-						position: relative
 						padding: 12px 0
 						border-bottom: 1px solid #eee
-						&:last-child
-							border: none
-						.user
-							font-size: 0
-							margin-bottom: 12px
-							.avatar
-								display: inline-block
-								width: 48px
-								height: 48px
-								vertical-align: middle
-								margin-right: 20px
-							.name
-								display: inline-block
-								font-size: 14px
-								vertical-align: middle
-						.detail
-							p
-								font-size: 14px
-								line-height: 20px
-								margin-right: 60px
-						.icon
-							position: absolute
-							bottom: 12px
-							right: 0
-							.icon-envelop
-								padding: 12px 6px 12px 12px
-							.icon-chevron-up
-								padding: 12px 12px 12px 6px
+						.wrapper
+							position: relative
+							&:last-child
+								border: none
+							.user
+								font-size: 0
+								margin-bottom: 12px
+								.avatar
+									display: inline-block
+									width: 48px
+									height: 48px
+									vertical-align: middle
+									margin-right: 20px
+								.name
+									display: inline-block
+									font-size: 14px
+									vertical-align: middle
+							.detail
+								p
+									font-size: 14px
+									line-height: 20px
+									margin-right: 60px
+							.icon
+								position: absolute
+								bottom: 3px
+								right: 0
+								.icon-envelop
+									padding: 12px 6px 12px 12px
+								.icon-chevron-up
+									padding: 12px 12px 12px 6px
 </style>
