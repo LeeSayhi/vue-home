@@ -21,14 +21,14 @@
     <div class="login-btm">
       <button>
         <div class="wrapper"></div>
-        <span class="text" @click="login">登录</span>
+        <span class="text" @click="_login">登录</span>
       </button>
     </div>
   </div>
 </template>
 <script>
   import Header from 'components/header/header.vue'
-  import axios from 'axios'
+  import { login } from 'common/api/api'
 
   export default {
     data() {
@@ -52,12 +52,9 @@
           this.placeholder = '请输入accessToken'
         }, 300)
       },
-      login() {
-        axios.post('https://www.vue-js.com/api/v1/accesstoken', {
-          accesstoken: this.value
-        })
-        .then((res) => {
-          localStorage.setItem('accesstoken', this.val)
+      _login() {
+        login(this.value).then((res) => {
+          localStorage.setItem('accesstoken', this.value)
           localStorage.setItem('user_id', res.data.id)
           localStorage.setItem('loginname', res.data.loginname)
 

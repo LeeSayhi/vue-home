@@ -1,7 +1,7 @@
 <template>
-  <div class="reply" v-show="showFlag">
+  <div class="reply">
     <div class="reply-content">
-      <input name="" value="评论">
+      <input name="" v-model="text" placeholder="评论">
     </div>
     <div class="confirm">
       <div class="confirm-content">
@@ -14,17 +14,20 @@
   </div>
 </template>
 <script>
+
   export default {
-    props: {
-      showFlag: false
+    data() {
+      return {
+        showFlag: false,
+        text: ''
+      }
     },
     methods: {
       cancel() {
         this.$emit('cancel')
-        this.showFlag = false
       },
       confirm() {
-        this.$emit('confirm')
+        this.$emit('confirm', this.text)
       }
     }
   }

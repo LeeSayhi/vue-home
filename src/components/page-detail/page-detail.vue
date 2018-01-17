@@ -50,7 +50,7 @@
 						</div>
 						<div class="comments">
 							<ul>
-								<li class="item" v-for="item in data.replies">
+								<li class="item" v-for="(item, index) in data.replies" :key="item.id">
 									<div class="wrapper">
 										<div class="user">
 											<div class="avatar">
@@ -63,11 +63,11 @@
 										</div>
 										<div class="detail" v-html="item.content"></div>
 										<div class="icon">
-											<i class="icon-envelop" @click="reply"></i>
+											<i class="icon-envelop" @click="reply(index)"></i>
 											<i class="icon-chevron-up"></i>
 										</div>
 									</div>
-									<reply :showFlag="showFlag"></reply>
+									<reply v-if="index === i && showFlag" @cancel="cancelReply" @confirm="confirmReply"></reply>
 								</li>
 							</ul>
 						</div>
@@ -79,12 +79,12 @@
 </template>
 <script>
 	import Header from 'components/header/header.vue'
-	import axios from 'axios'
 	import Reply from 'base/reply/reply'
 	import { formatNewDate } from 'common/js/filter'
 	import BScroll from 'better-scroll'
 	import { mapActions, mapGetters } from 'vuex'
 	import { createArt } from 'common/js/article'
+	import { replies, getTopicInfo } from 'common/api/api'
 	export default {
 		data() {
 			return {
@@ -92,12 +92,13 @@
 				data: {},
 				loginname: '',
 				favorite: false,
+				i: -1,
 				showFlag: false
 			}
 		},
 		created() {
 			this.id = this.$route.params.id
-			this.getTopicInfo()
+			this._getTopicInfo()
 			this.isLogin()
 		},
 		computed: {
@@ -112,15 +113,8 @@
 			back() {
 				this.$router.back()
 			},
-			getTopicInfo() {
-				const url = `https://www.vue-js.com/api/v1/topic/${this.id}`
-
-				axios.get(url, {
-          params: {
-            mdrender: true
-          }
-        })
-        .then((res) => {
+			_getTopicInfo() {
+				getTopicInfo(this.id).then((res) => {
         	if (res.statusText === 'OK') {
         		this.data = res.data.data
         		this.initScroll()
@@ -169,8 +163,26 @@
 				'saveFavoriteHistory',
 				'deleteFavoriteHistory'
 			]),
-			reply() {
+			// 点击打开评论或关闭
+			reply(index){
+				this.i = index
 				this.showFlag = !this.showFlag
+			},
+			// 取消 评论
+			cancelReply() {
+				this.showFlag = !this.showFlag
+			},
+			// 评论
+			confirmReply(text) {
+				const topic_id = this.id
+				const data = {
+					accesstoken: localStorage.getItem('accesstoken'),
+					content: text,
+					reply_id: this.data.replies[this.i].id
+				}
+				replies(topic_id, data.accesstoken, data.content, data.reply_id).then((res) => {
+					console.log(res)
+				})
 			}
 		},
 		filters: {
