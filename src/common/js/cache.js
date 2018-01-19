@@ -5,6 +5,8 @@ const FAVORITE_LEN = 20
 
 const USER_KEY = '__user__'
 
+const THUMB_UP_KEY = '__thumbUp__'
+
 function insertArray(arr, val, maxLen) {
   const index = arr.findIndex((item) => {
     return item.id === val.id
@@ -29,7 +31,6 @@ function deleteFromArray(arr, val) {
     arr.splice(index, 1)
   }
 }
-
 
 export function saveUser(accesstoken, res) {
   const user = {

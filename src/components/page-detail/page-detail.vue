@@ -1,105 +1,117 @@
 <template>
 	<transition name="fade">
-		<div class="page-detail">
-			<v-header>
-				<div class="header">
-					<div class="back center" @click="back">
-						<i class="icon-chevron-up"></i>
-					</div>
-					<div class="title center">
-						<h2>{{data.title}}</h2>
-					</div>
-					<div class="popover center">
-						<i>oooo</i>
-					</div>
-				</div>
-			</v-header>
-			<div class="content" ref="content">
-				<div class="content-wrapper">
-					<div class="content-title">
-						<div class="title-info">
-							<span class="title">{{getTitle}}</span>
-							<span class="desc">{{data.title}}</span>
+		<div>
+			<div class="page-detail">
+				<v-header>
+					<div class="header">
+						<div class="back center" @click="back">
+							<i class="icon-arrow-left2"></i>
+						</div>
+						<div class="title center">
+							<h2>{{data.title}}</h2>
+						</div>
+						<div class="popover center">
+							<i>oooo</i>
 						</div>
 					</div>
-					<div class="content-author">
-						<div class="author-info">
-							<div class="avatar">
-								<img v-lazy="data.author.avatar_url" width="48" height="48">
-							</div>
-							<div class="desc">
-								<span>作者：{{data.author.loginname}}</span>
-								<span>发表时间：{{data.create_at | formateDate}}</span>
-								<span>最后回复：{{data.last_reply_at | formateDate}}</span>
-								<span>浏览量：{{data.visit_count}}</span>
+				</v-header>
+				<div class="content" ref="content">
+					<div class="content-wrapper">
+						<div class="content-title">
+							<div class="title-info">
+								<span class="title">{{getTitle}}</span>
+								<span class="desc">{{data.title}}</span>
 							</div>
 						</div>
-					</div>
-					<div class="content-collect" v-show="loginname">
-						<div class="collect-wrapper">
-							<i :class="toggleIcon(data)" class="icon" @click="toggleFavorite"></i>
-							<span>{{toggleText(data)}}</span>
+						<div class="content-author">
+							<div class="author-info">
+								<div class="avatar">
+									<img v-lazy="data.author.avatar_url" width="48" height="48">
+								</div>
+								<div class="desc">
+									<span>作者：{{data.author.loginname}}</span>
+									<span>发表时间：{{data.create_at | formateDate}}</span>
+									<span>最后回复：{{data.last_reply_at | formateDate}}</span>
+									<span>浏览量：{{data.visit_count}}</span>
+								</div>
+							</div>
 						</div>
-					</div>
-					<div class="content-main">
-						<div class="text" v-html="data.content" ref="text"></div>
-					</div>
-					<div class="content-comments">
-						<div class="title">
-							<h3>{{data.replies.length}}条评论</h3>
+						<div class="content-collect" v-show="loginname">
+							<div class="collect-wrapper">
+								<i :class="toggleIcon(data)" class="icon" @click="toggleFavorite"></i>
+								<span>{{toggleText(data)}}</span>
+							</div>
 						</div>
-						<div class="comments">
-							<ul>
-								<li class="item" v-for="(item, index) in data.replies" :key="item.id">
-									<div class="wrapper">
-										<div class="user">
-											<div class="avatar">
-												<img v-lazy="item.author.avatar_url" width="48" height="48">
+						<div class="content-main">
+							<div class="text" v-html="data.content" ref="text"></div>
+						</div>
+						<div class="content-comments">
+							<div class="title">
+								<h3>{{data.replies.length}}条评论</h3>
+							</div>
+							<div class="comments">
+								<ul>
+									<li class="item" v-for="(item, index) in data.replies" :key="item.id">
+										<div class="wrapper">
+											<div class="user">
+												<div class="avatar">
+													<img v-lazy="item.author.avatar_url" width="48" height="48">
+												</div>
+												<div class="name">
+													<span>{{item.author.loginname}}</span>
+													<span class="time">{{item.create_at | formateDate}}</span>
+												</div>
 											</div>
-											<div class="name">
-												<span>{{item.author.loginname}}</span>
-												<span class="time">{{item.create_at | formateDate}}</span>
+											<div class="detail" v-html="item.content"></div>
+											<div class="icon">
+												<i class="icon-envelop" @click="reply(index)"></i>
+												<i class="icon-thumb_up" :key="item.id" @click="_ups(index, $event)"></i>
 											</div>
 										</div>
-										<div class="detail" v-html="item.content"></div>
-										<div class="icon">
-											<i class="icon-envelop" @click="reply(index)"></i>
-											<i class="icon-chevron-up"></i>
-										</div>
-									</div>
-									<reply v-if="index === i && showFlag" @cancel="cancelReply" @confirm="confirmReply"></reply>
-								</li>
-							</ul>
+										<reply v-if="index === i && showFlag" @cancel="cancelReply" @confirm="confirmReply"></reply>
+									</li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+			<layer ref="layer" :layerText="layerText"></layer>
 		</div>
 	</transition>
 </template>
 <script>
 	import Header from 'components/header/header.vue'
-	import Reply from 'base/reply/reply'
-	import { formatNewDate } from 'common/js/filter'
+	import Reply from 'base/reply/reply.vue'
 	import BScroll from 'better-scroll'
+	import Layer from 'base/layer/layer.vue'
+	import { formatNewDate } from 'common/js/filter'
 	import { mapActions, mapGetters } from 'vuex'
 	import { createArt } from 'common/js/article'
-	import { replies, getTopicInfo } from 'common/api/api'
+	import { replies, getTopicInfo, ups } from 'common/api/api'
+	import { addClass, removeClass } from 'common/js/dom'
 	export default {
 		data() {
 			return {
 				id: '',
+				userId: '',
 				data: {},
 				loginname: '',
 				favorite: false,
 				i: -1,
-				showFlag: false
+				showFlag: false,
+				layerText: '',
+				accesstoken: '',
+				isUp: false
 			}
 		},
+		// vue 会为 data 里所有属性添加 getter/setter 方法, 实现双向绑定 Observer（观察者模式）
 		created() {
 			this.id = this.$route.params.id
+			this.accesstoken = localStorage.getItem('accesstoken'),
 			this._getTopicInfo()
 			this.isLogin()
+			this.userId = localStorage.getItem('user_id')		
 		},
 		computed: {
 			getTitle() {
@@ -118,6 +130,11 @@
         	if (res.statusText === 'OK') {
         		this.data = res.data.data
         		this.initScroll()
+        		const replies = this.data.replies
+      			const index = replies.findIndex((item) => {
+      				return item === this.user_id
+      			})
+      			console.log(replies)
         	}
         })
 			},
@@ -174,14 +191,60 @@
 			},
 			// 评论
 			confirmReply(text) {
+				if (!this.accesstoken) {
+					this.$refs.layer.layer_msg('请先登录哦，亲！')
+					return
+				}
+
 				const topic_id = this.id
 				const data = {
-					accesstoken: localStorage.getItem('accesstoken'),
 					content: text,
 					reply_id: this.data.replies[this.i].id
 				}
-				replies(topic_id, data.accesstoken, data.content, data.reply_id).then((res) => {
-					console.log(res)
+				replies(topic_id, this.accesstoken, data.content, data.reply_id)
+				.then((res) => {
+					// console.log(res)
+					this.$refs.layer.layer_msg('评论成功')
+					this.showFlag = false
+				})
+				.catch(() => {
+					if (!data.content) {
+						this.$refs.layer.layer_msg('内容不能为空哦！')
+					}else {
+						this.$refs.layer.layer_msg('评论失败，请重试')
+					}
+				})
+			},
+			// 点赞
+			_ups(index, e) {
+				if (!this.accesstoken) {
+					this.$refs.layer.layer_msg('请先登录哦，亲！')
+					return
+				}
+
+				const reply_id = this.data.replies[index].id
+				const thumbUp = {
+					id: reply_id,
+					el: e.target
+				}
+				ups(reply_id, this.accesstoken)
+				.then((res) => {
+					if (res.data.success) {
+						if (res.data.action === 'up') {
+							this.isUp = true						
+							addClass(e.target, 'on')
+						} else {
+							this.isUp = false
+							removeClass(e.target, 'on')
+						}
+					} else{
+						this.layerText = res.data.error_msg
+						this.$refs.layer.show()
+					}
+				})
+				.catch((e) => {
+					this.$refs.layer.layer_msg('点赞失败，请重试!')
+					console.log(e)
 				})
 			}
 		},
@@ -192,7 +255,8 @@
 		},
 		components: {
 			'v-header': Header,
-			Reply
+			Reply,
+			Layer
 		}
 	}
 </script>
@@ -223,7 +287,7 @@
 			.back
 				width: 50px
 				flex: 0 0 50px
-				font-size: 26px
+				font-size: 24px
 			.title
 				flex: 1
 				h2
@@ -324,8 +388,12 @@
 								position: absolute
 								bottom: 3px
 								right: 0
+								font-size: 14px
+								color: gray
 								.icon-envelop
 									padding: 12px 6px 12px 12px
-								.icon-chevron-up
-									padding: 12px 12px 12px 6px
+								.icon-thumb_up
+									padding: 12px 0 12px 6px
+									&.on
+										color: red
 </style>

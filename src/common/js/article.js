@@ -1,5 +1,5 @@
 class Art {
-  constructor({ id, title, time, collectTime}) {
+  constructor({id, title, time, collectTime}) {
     this.id = id,
     this.title = title,
     this.time = time,

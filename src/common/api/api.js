@@ -27,3 +27,11 @@ export function getTopicInfo(id) {
     }
   })
 }
+
+export function ups(reply_id, accesstoken) {
+  const url = `https://www.vue-js.com/api/v1/reply/${reply_id}/ups`
+
+  return axios.post(url, {
+    accesstoken
+  })
+}
