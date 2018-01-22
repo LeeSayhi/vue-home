@@ -8,7 +8,7 @@ export function login(accesstoken) {
   })
 }
 
-export function replies(topic_id, accesstoken, content, reply_id) {
+export function getReplies(topic_id, accesstoken, content, reply_id) {
   const url = `https://www.vue-js.com/api/v1/topic/${topic_id}/replies`
 
   return axios.post(url, {

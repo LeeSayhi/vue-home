@@ -47,11 +47,11 @@
 						</div>
 						<div class="content-comments">
 							<div class="title">
-								<h3>{{data.replies.length}}条评论</h3>
+								<h3>{{replies.length}}条评论</h3>
 							</div>
 							<div class="comments">
 								<ul>
-									<li class="item" v-for="(item, index) in data.replies" :key="item.id">
+									<li class="item" v-for="(item, index) in replies" :key="item.id">
 										<div class="wrapper">
 											<div class="user">
 												<div class="avatar">
@@ -65,7 +65,8 @@
 											<div class="detail" v-html="item.content"></div>
 											<div class="icon">
 												<i class="icon-envelop" @click="reply(index)"></i>
-												<i class="icon-thumb_up" :key="item.id" @click="_ups(index, $event)"></i>
+												<i class="icon-thumb_up" :key="item.id" @click="_ups(index, $event)" :class="getOwnThumbUp(index)"></i>
+												<i class="num">{{item.ups.length}}</i>
 											</div>
 										</div>
 										<reply v-if="index === i && showFlag" @cancel="cancelReply" @confirm="confirmReply"></reply>
@@ -88,7 +89,7 @@
 	import { formatNewDate } from 'common/js/filter'
 	import { mapActions, mapGetters } from 'vuex'
 	import { createArt } from 'common/js/article'
-	import { replies, getTopicInfo, ups } from 'common/api/api'
+	import { getReplies, getTopicInfo, ups } from 'common/api/api'
 	import { addClass, removeClass } from 'common/js/dom'
 	export default {
 		data() {
@@ -96,6 +97,7 @@
 				id: '',
 				userId: '',
 				data: {},
+				replies: '',
 				loginname: '',
 				favorite: false,
 				i: -1,
@@ -111,7 +113,8 @@
 			this.accesstoken = localStorage.getItem('accesstoken'),
 			this._getTopicInfo()
 			this.isLogin()
-			this.userId = localStorage.getItem('user_id')		
+			this.userId = localStorage.getItem('user_id'),
+			this.thumbUpArr = []	
 		},
 		computed: {
 			getTitle() {
@@ -129,12 +132,8 @@
 				getTopicInfo(this.id).then((res) => {
         	if (res.statusText === 'OK') {
         		this.data = res.data.data
+        		this.replies = this.data.replies
         		this.initScroll()
-        		const replies = this.data.replies
-      			const index = replies.findIndex((item) => {
-      				return item === this.user_id
-      			})
-      			console.log(replies)
         	}
         })
 			},
@@ -199,9 +198,9 @@
 				const topic_id = this.id
 				const data = {
 					content: text,
-					reply_id: this.data.replies[this.i].id
+					reply_id: this.replies[this.i].id
 				}
-				replies(topic_id, this.accesstoken, data.content, data.reply_id)
+				getReplies(topic_id, this.accesstoken, data.content, data.reply_id)
 				.then((res) => {
 					// console.log(res)
 					this.$refs.layer.layer_msg('评论成功')
@@ -222,7 +221,7 @@
 					return
 				}
 
-				const reply_id = this.data.replies[index].id
+				const reply_id = this.replies[index].id
 				const thumbUp = {
 					id: reply_id,
 					el: e.target
@@ -231,11 +230,13 @@
 				.then((res) => {
 					if (res.data.success) {
 						if (res.data.action === 'up') {
-							this.isUp = true						
+							this.isUp = true
 							addClass(e.target, 'on')
+							this.thumbUpUpateNum()
 						} else {
 							this.isUp = false
 							removeClass(e.target, 'on')
+							this.thumbUpUpateNum()
 						}
 					} else{
 						this.layerText = res.data.error_msg
@@ -246,6 +247,29 @@
 					this.$refs.layer.layer_msg('点赞失败，请重试!')
 					console.log(e)
 				})
+			},
+			// 页面刚进来时显示已点赞样式
+			getOwnThumbUp(index) {
+		    for(let i = 0; i < this.replies.length; i++) {
+  				for(let j = 0; j < this.replies[i].ups.length; j++) {
+  					const id = this.replies[i].ups[j]
+  					if (id === this.userId) {
+  						this.thumbUpArr.push(i)
+  					}
+  				}
+  			}
+				if (this.thumbUpArr.indexOf(index) > -1) {
+					return 'on'
+				}
+			},
+			// 点赞操作后重新请求数据，刷新点赞数量
+			thumbUpUpateNum() {
+				getTopicInfo(this.id).then((res) => {
+	      	if (res.statusText === 'OK') {
+	      		this.data = res.data.data
+	      		this.replies = this.data.replies
+	      	}
+	      })
 			}
 		},
 		filters: {
