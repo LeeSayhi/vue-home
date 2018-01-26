@@ -7,10 +7,13 @@ import App from './App'
 import router from './router'
 import VueLazyload from 'vue-lazyload'
 import store from './store'
+import VConsole from 'vconsole'
  
 import 'common/stylus/index.styl'
 
 Vue.config.productionTip = false
+
+// var vConsole = new VConsole()
 
 Vue.use(VueLazyload, {
   loading: require('common/images/default.png')

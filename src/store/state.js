@@ -1,8 +1,9 @@
-import { loadFavoriteHistory } from 'common/js/cache'
+import { loadFavoriteHistory, loadReplyHistory } from 'common/js/cache'
 
 const state = {
   user: '',
-  favoriteHistory: loadFavoriteHistory()
+  favoriteHistory: loadFavoriteHistory(),
+  repliesHistory: loadReplyHistory()
 }
 
 export default state

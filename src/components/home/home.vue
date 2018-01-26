@@ -9,7 +9,9 @@
       </div>
     </v-header>
     <v-tab @select="selectInfo"></v-tab>
-    <router-view></router-view>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 <script>

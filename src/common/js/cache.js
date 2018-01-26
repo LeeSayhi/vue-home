@@ -3,6 +3,9 @@ import storage from 'good-storage'
 const FAVORITE_KEY = '__favorite__'
 const FAVORITE_LEN = 20
 
+const REPLY_KEY = '__reply__'
+const REPLY_LEN = 20
+
 const USER_KEY = '__user__'
 
 const THUMB_UP_KEY = '__thumbUp__'
@@ -61,4 +64,22 @@ export function deleteFavorite(art) {
 
 export function loadFavoriteHistory() {
   return storage.get(FAVORITE_KEY, [])
+}
+
+export function saveReplies(reply) {
+  const replies = storage.get(REPLY_KEY, [])
+  insertArray(replies, reply, REPLY_LEN)
+  storage.set(REPLY_KEY, replies)
+  return replies
+}
+
+export function deleteReplies(reply) {
+  const replies = storage.get(REPLY_KEY, [])
+  deleteFromArray(replies, reply)
+  storage.set(REPLY_KEY, replies)
+  return replies
+}
+
+export function loadReplyHistory(reply) {
+  return storage.get(REPLY_KEY, [])
 }

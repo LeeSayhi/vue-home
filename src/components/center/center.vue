@@ -26,8 +26,8 @@
           <div class="right">
             <div class="num">
               <span>0</span>
-            </div>          
-            <i class="icon-chevron-down icon-chevron"></i>
+            </div>
+            <i class="icon-chevron" :class=""></i>
           </div>  
         </div>
         <div class="topic recent">
@@ -38,12 +38,12 @@
             </div>
             <div class="right">
               <div class="num">
-                <span>0</span>
+                <span>{{repliesHistory.length}}</span>
               </div>          
-              <i class="icon-chevron-down icon-chevron"></i>
+              <i class="icon-chevron" :class="toggleRepliesIcon"></i>
             </div>
           </div>
-          <article-list></article-list>
+          <article-list :interestingTopic="repliesHistory" v-if="replyFlag"></article-list>
         </div>
         <div class="topic recent">
           <div class="title" @click="showCollect()">
@@ -53,11 +53,11 @@
             </div>
             <div class="right">
               <div class="num">
-                <span>{{favoriteHistory.length}}个</span>
+                <span>{{favoriteHistory.length}}</span>
               </div>       
-              <i class="icon-chevron" :class="toggleUpDown"></i>
+              <i class="icon-chevron" :class="toggleFavoriteIcon"></i>
             </div>
-            <article-list :favoriteHistory="favoriteHistory" :show="show"></article-list>
+            <article-list :interestingTopic="favoriteHistory" v-if="favoriteFlag"></article-list>
           </div>
         </div>
       </div>
@@ -83,7 +83,9 @@
       return {
         loginname: '',
         user: {},
-        show: false
+        show: false,
+        favoriteFlag: false,
+        replyFlag: false
       }
     },
     created() {
@@ -95,11 +97,15 @@
       })
     },
     computed: {
-      toggleUpDown() {
-        return this.show ? 'icon-chevron-up' : 'icon-chevron-down'
+      toggleFavoriteIcon() {
+        return this.favoriteFlag ? 'icon-chevron-up' : 'icon-chevron-down'
+      },
+      toggleRepliesIcon() {
+        return this.replyFlag ? 'icon-chevron-up' : 'icon-chevron-down'
       },
       ...mapGetters([
-        'favoriteHistory'
+        'favoriteHistory',
+        'repliesHistory'
       ])
     },
     methods: {
@@ -111,7 +117,10 @@
         this.$router.push('/Home/all')
       },
       showCollect() {
-        this.show = !this.show
+        this.favoriteFlag = !this.favoriteFlag
+      },
+      showReply() {
+        this.replyFlag = !this.replyFlag
       }
     },
     filters: {
@@ -193,6 +202,8 @@
           font-size: 16px
           .num
             display: inline-block
+            width: 1rem
+            height: 1rem
     .login-btm
       margin-top: 2rem
       text-align: center

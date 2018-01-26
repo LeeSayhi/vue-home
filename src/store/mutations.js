@@ -6,6 +6,9 @@ const mutations = {
   },
   [types.SET_USER](state, user) {
     state.user = user
+  },
+  [types.SET_REPLIES_HISTORY](state, repliesHistory) {
+    state.repliesHistory = repliesHistory
   }
 }
 

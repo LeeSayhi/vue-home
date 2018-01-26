@@ -1,7 +1,7 @@
 <template>
-  <div class="content" v-if="show & favoriteHistory.length > 0">
+  <div class="content" v-if="interestingTopic.length > 0">
     <ul class="list">
-      <li class="item" v-for="(item, index) in favoriteHistory" @click="selectInfo(index)">
+      <li class="item" v-for="(item, index) in interestingTopic" @click="selectInfo(index)">
         <div class="item-left">
           <i class="icon-eye"></i>
           <h2>{{item.title}}</h2>
@@ -15,17 +15,20 @@
 </template>
 <script>
   import { formatNewDate } from 'common/js/filter'
-  import { mapGetters } from 'vuex'
 
   export default {
     props: {
-      show: false,
-      favoriteHistory: []
+      interestingTopic: {
+        type: Array,
+        default: () => {
+          return []
+        }
+      }
     },
     methods: {
       selectInfo(index) {
         this.$router.push ({
-          path: `Center/${(this.favoriteHistory)[index].id}`
+          path: `Center/${(this.interestingTopic)[index].id}`
         })
       }
     },

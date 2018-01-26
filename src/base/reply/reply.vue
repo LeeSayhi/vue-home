@@ -1,7 +1,8 @@
 <template>
   <div class="reply">
     <div class="reply-content">
-      <input name="" v-model="text" placeholder="评论">
+      <input v-model="text">
+      <!-- <vue-editor v-model="content" :editorToolbar="customToolbar"></vue-editor> -->
     </div>
     <div class="confirm">
       <div class="confirm-content">
@@ -14,13 +15,30 @@
   </div>
 </template>
 <script>
+  
+  // import { VueEditor } from 'vue2-editor'
 
   export default {
     data() {
       return {
         showFlag: false,
         text: ''
+        // content: 'Some initial content',
+        // customToolbar: [
+        //   ['bold', 'italic', 'underline'],
+        //   [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        //   ['image', 'code-block']
+        // ]
       }
+    },
+    props: {
+      placeholder: {
+        type: String,
+        default: ''
+      },
+    },
+    created() {
+      this.text = this.placeholder
     },
     methods: {
       cancel() {
@@ -30,6 +48,9 @@
         this.$emit('confirm', this.text)
       }
     }
+    // components: {
+    //   VueEditor
+    // },
   }
 </script>
 <style scoped lang="stylus">

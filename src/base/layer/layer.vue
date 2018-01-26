@@ -13,13 +13,8 @@
   export default {
     data() {
       return {
-        showLayer: false
-      }
-    },
-    props: {
-      layerText: {
-        type: String,
-        default: '评论成功'
+        showLayer: false,
+        layerText: ''
       }
     },
     methods: {

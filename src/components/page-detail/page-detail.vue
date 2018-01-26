@@ -58,26 +58,30 @@
 													<img v-lazy="item.author.avatar_url" width="48" height="48">
 												</div>
 												<div class="name">
-													<span>{{item.author.loginname}}</span>
+													<span class="loginname">{{item.author.loginname}}</span>
 													<span class="time">{{item.create_at | formateDate}}</span>
 												</div>
 											</div>
 											<div class="detail" v-html="item.content"></div>
 											<div class="icon">
-												<i class="icon-envelop" @click="reply(index)"></i>
+												<i class="icon-envelop" @click="reply(item, index)"></i>
 												<i class="icon-thumb_up" :key="item.id" @click="_ups(index, $event)" :class="getOwnThumbUp(index)"></i>
 												<i class="num">{{item.ups.length}}</i>
 											</div>
 										</div>
-										<reply v-if="index === i && showFlag" @cancel="cancelReply" @confirm="confirmReply"></reply>
+										<reply v-if="index === i && showFlag" :placeholder="placeholder" @cancel="cancelReply" @confirm="confirmReply"></reply>
 									</li>
 								</ul>
 							</div>
 						</div>
+						<div class="content-reply">
+							<h2 class="title">添加回复</h2>
+							<reply @confirm="confirmReply"></reply>
+						</div>
 					</div>
 				</div>
 			</div>
-			<layer ref="layer" :layerText="layerText"></layer>
+			<layer ref="layer"></layer>
 		</div>
 	</transition>
 </template>
@@ -101,8 +105,8 @@
 				loginname: '',
 				favorite: false,
 				i: -1,
+				placeholder: '',
 				showFlag: false,
-				layerText: '',
 				accesstoken: '',
 				isUp: false
 			}
@@ -177,34 +181,36 @@
 			},
 			...mapActions([
 				'saveFavoriteHistory',
-				'deleteFavoriteHistory'
+				'deleteFavoriteHistory',
+				'saveRepliesHistory'
 			]),
 			// 点击打开评论或关闭
-			reply(index){
+			reply(item, index){
 				this.i = index
 				this.showFlag = !this.showFlag
+				this.placeholder = `@${item.author.loginname}`
 			},
 			// 取消 评论
 			cancelReply() {
 				this.showFlag = !this.showFlag
 			},
-			// 评论
+			// 提交评论
 			confirmReply(text) {
 				if (!this.accesstoken) {
 					this.$refs.layer.layer_msg('请先登录哦，亲！')
 					return
 				}
-
 				const topic_id = this.id
 				const data = {
 					content: text,
-					reply_id: this.replies[this.i].id
+					reply_id: this.i > -1 ? this.replies[this.i].id : ''
 				}
 				getReplies(topic_id, this.accesstoken, data.content, data.reply_id)
 				.then((res) => {
-					// console.log(res)
 					this.$refs.layer.layer_msg('评论成功')
 					this.showFlag = false
+					this.Updata()
+					this.saveRepliesHistory(createArt(this.data))
 				})
 				.catch(() => {
 					if (!data.content) {
@@ -212,6 +218,7 @@
 					}else {
 						this.$refs.layer.layer_msg('评论失败，请重试')
 					}
+					return
 				})
 			},
 			// 点赞
@@ -232,15 +239,14 @@
 						if (res.data.action === 'up') {
 							this.isUp = true
 							addClass(e.target, 'on')
-							this.thumbUpUpateNum()
+							this.Updata()
 						} else {
 							this.isUp = false
 							removeClass(e.target, 'on')
-							this.thumbUpUpateNum()
+							this.Updata()
 						}
 					} else{
-						this.layerText = res.data.error_msg
-						this.$refs.layer.show()
+						this.$refs.layer.layer_msg(res.data.error_msg)
 					}
 				})
 				.catch((e) => {
@@ -262,8 +268,8 @@
 					return 'on'
 				}
 			},
-			// 点赞操作后重新请求数据，刷新点赞数量
-			thumbUpUpateNum() {
+			// 重新获取数据
+			Updata() {
 				getTopicInfo(this.id).then((res) => {
 	      	if (res.statusText === 'OK') {
 	      		this.data = res.data.data
@@ -375,6 +381,7 @@
 				.text
 					color: #474a4f
 			.content-comments
+				border-bottom: 8px solid #eee
 				.title
 					padding: 0 24px
 					height: 48px
@@ -385,11 +392,11 @@
 					margin: 0 24px
 					.item
 						padding: 12px 0
-						border-bottom: 1px solid #eee
+						border-bottom: 1px solid #f6f6f6
+						&:last-child
+							border: none
 						.wrapper
 							position: relative
-							&:last-child
-								border: none
 							.user
 								font-size: 0
 								margin-bottom: 12px
@@ -401,8 +408,14 @@
 									margin-right: 20px
 								.name
 									display: inline-block
-									font-size: 14px
+									font-size: 0
 									vertical-align: middle
+									.loginname
+										font-size: 14px
+										margin-right: 10px
+									.time
+										font-size: 14px
+										color: #08c
 							.detail
 								p
 									font-size: 14px
@@ -412,12 +425,23 @@
 								position: absolute
 								bottom: 3px
 								right: 0
-								font-size: 14px
+								font-size: 0
 								color: gray
-								.icon-envelop
+								.icon-envelop								
 									padding: 12px 6px 12px 12px
+									font-size: 14px
 								.icon-thumb_up
-									padding: 12px 0 12px 6px
+									padding: 12px 6px 12px 6px
+									font-size: 14px
+								.num
+									font-size: 14px
 									&.on
 										color: red
+			.content-reply
+				.title
+					padding: 0 24px
+					height: 48px
+					line-height: 48px
+					background: #f6f6f6
+					font-size: 14px
 </style>
