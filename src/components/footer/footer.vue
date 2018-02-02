@@ -13,8 +13,8 @@
       <span class="tab-link">我的</span>
     </router-link>
     <router-link to="/More" tag="div" class="tab-item">
-      <i class="icon-envelop icon"></i>
-      <span class="tab-link">更多</span>
+      <i class="icon-search icon"></i>
+      <span class="tab-link">搜索</span>
     </router-link>
   </div>
 </template>

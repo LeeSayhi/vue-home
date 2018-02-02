@@ -14,19 +14,20 @@
           </div>
           <div class="right">
             <span class="num">{{count}}</span>
-            <i class="icon-chevron-down icon"></i>
+            <i class="icon" :class="toggleHasNotIcon"></i>
           </div>
+          <article-list :interestingTopic="hasNotReadMessages" v-if="showHasNot"></article-list>
         </li>
-        <li class="item">
+        <li class="item" @click="hasRead()">
           <div class="left">
             <i class="icon-eye icon"></i>
             <span class="title">已读消息</span>
           </div>
           <div class="right">
             <span class="num">0</span>
-            <i class="icon-chevron-down icon"></i>
+            <i class="icon" :class="toggleHasIcon"></i>
           </div>
-          <article-list></article-list>
+          <article-list :interestingTopic="hasReadMessages" v-if="showHas"></article-list>
         </li>
       </ul>
     </div>
@@ -46,31 +47,63 @@
         accesstoken: '',
         showLayer: false,
         hasReadMessages: [],
-        hasNotReadMessages: []
+        hasNotReadMessages: [],
+        showHasReadIcon: false,
+        showHasNotReadIcon: false,
+        showHas: false,
+        showHasNot: false
       }
     },
     created() {
       this.accesstoken = localStorage.getItem('accesstoken')
       this._getNoReadCount()
+      this._getMessage()
+    },
+    computed: {
+      toggleHasNotIcon() {
+        return this.showHasNotReadIcon ? 'icon-chevron-up' : 'icon-chevron-down'
+      },
+      toggleHasIcon() {
+        return this.showHasReadIcon ? 'icon-chevron-up' : 'icon-chevron-down'
+      }
     },
     methods: {
       _getNoReadCount() {
         getNoReadCount(this.accesstoken).then((res) => {
-          // console.log(this.res)
           this.count = res.data.data
         })
         .catch((e) => {
-          // this.$refs.layer.layer_msg('Please login first')
           console.log(e)
         })
       },
       _getMessage() {
         getMessages(this.accesstoken).then((res) => {
-          console.log(res)
+          if (res.statusText === 'ok') {
+            this.hasReadMessages = res.data.data.has_read_messages
+            this.showHasNotRead = res.data.data.hasnot_read_messages
+          }
+        }).catch((e) => {
+          console.log(e)
         })
       },
+      hasRead() {
+        if (!this.accesstoken) {
+          this.hasNotLogin()
+          return
+        }
+        this.showHasReadIcon= !this.showHasReadIcon
+        this.showHas = !this.showHas
+      },
       hasNotRead() {
-        this._getMessage()
+        if (!this.accesstoken) {
+          this.hasNotLogin()
+          return
+        }
+        this.showHasNotReadIcon = !this.showHasNotReadIcon
+        this.showHasNot = !this.showHasNot
+      },
+      hasNotLogin() {
+        this.$refs.layer.layer_msg('please login')
       }
     },
     components: {
@@ -107,8 +140,8 @@
       padding: 0 2.1667rem
       .item
         position: relative
-        padding: 2rem 0
         font-size: 0
+        line-height: 4rem
         .left
           font-size: 0
           .icon
@@ -123,7 +156,7 @@
         .right
           position: absolute
           right: 0
-          top: 2.2rem
+          top: 0
           font-size: 0
           .num
             font-size: 16px

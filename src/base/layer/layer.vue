@@ -44,6 +44,10 @@
     left: 0
     z-index: 998
     background: rgba(0, 0, 0, .4)
+    &.layer-fade-enter-active
+      animation: layer-fadein 0.3s
+      .layer-content
+        animation: layer-zoom 0.3s
     .layer-wrapper
       position: absolute
       top: 50%

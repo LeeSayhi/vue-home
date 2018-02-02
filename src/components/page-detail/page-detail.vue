@@ -421,6 +421,8 @@
 									font-size: 14px
 									line-height: 20px
 									margin-right: 60px
+								img
+									width: 100%
 							.icon
 								position: absolute
 								bottom: 3px
@@ -435,8 +437,8 @@
 									font-size: 14px
 								.num
 									font-size: 14px
-									&.on
-										color: red
+								.on
+									color: red
 			.content-reply
 				.title
 					padding: 0 24px
